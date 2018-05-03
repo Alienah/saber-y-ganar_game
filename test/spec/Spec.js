@@ -26,6 +26,9 @@ describe('calculo de marcador', function () {
     else if ((esCorrecta && tiempo > 2) && (esCorrecta && tiempo <= 10)) {
       return puntos + 1;
     }
+    else if (esCorrecta && tiempo > 10) {
+      return puntos;
+    }
   }
 
   it("suma mas puntos si acierta muy rapido", function () {
