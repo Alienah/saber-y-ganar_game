@@ -34,5 +34,6 @@ describe('calculo de marcador', function () {
 
   it("suma 1 punto si acierta entre 2 y 10 segundos", function () {
     expect(recalcularMarcador(0, true, 3)).toBe(1);
+    expect(recalcularMarcador(0, true, 11)).not.toBe(1);
   });
 });
