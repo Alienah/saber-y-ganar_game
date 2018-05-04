@@ -38,11 +38,41 @@
 *
 * */
 describe('comprobación de las respuestas', function () {
-  function isCorrect () {
+  let questionDescription = {
+    id: 1,
+    title: '¿Cuál es la capital de Alemania?',
+    answers: [
+      {id: 1, value: 'Madrid'},
+      {id: 2, value: 'México'},
+      {id: 3, value: 'Berlín', isCorrect: true}
+    ]
+  };
+  let userAnswer = {
+    id: 3
+  }
+  function isCorrect (question, userAnswer) {
+    const answersArray = question.answers;
     
+    for (let item = 0; item < answersArray.length; item++) {
+      const element = answersArray[item];
+      if (element.id === userAnswer.id) {
+        if (element.isCorrect === true) {
+          return true;
+        }
+        else{
+          return false;
+        }
+      }
+      
+    }
+    // if(userAnswer.id === questionDescription.answers.id){
+    //   if(questionDescription.answers.isCorrect === true){
+    //     return true;
+    //   }
+    // }
   }
   it('la respuesta es incorrecta', function () {
-    expect(isCorrect()).toBe(true);
+    expect(isCorrect(questionDescription, userAnswer)).toBe(true);
   });
 });
 
