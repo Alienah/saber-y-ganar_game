@@ -16,7 +16,7 @@
             (1 punto, incorrecta, 5 segundos) -> 0 puntos
 *      No se puede pasar sin responder
 *      Si en 20 segundos no has respondido , pasa a siguiente pregunta y pierdes 3 punto
-*
+*           (3 puntos, no contesta, 21 segundos) -> 0 puntos
 *
 * */
 
@@ -63,4 +63,9 @@ describe('calculo de marcador', function () {
     expect(recalcularMarcador(1, false, 5)).toBe(0);
     expect(recalcularMarcador(1, false, 10)).toBe(0);
   });
+
+  it("resta más puntos si no contesto en 20 segundos", function () {
+    expect(recalcularMarcador(3, null, 21)).toBe(0);
+  });
+  
 });
