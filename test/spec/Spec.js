@@ -26,10 +26,10 @@ describe('calculo de marcador si es correcta', function () {
     if (tiempo <= 2) {
       return marcador + 2;
     }
-    else if (tiempo <= 10) {
+    if (tiempo <= 10) {
       return marcador + 1;
     }
-    else if (tiempo > 10) {
+    if (tiempo > 10) {
       return marcador;
     }
   }
@@ -42,6 +42,7 @@ describe('calculo de marcador si es correcta', function () {
 
   it("suma 1 punto si acierta entre 2 y 10 segundos", function () {
     expect(recalcularMarcadorAcertando(0, 3)).toBe(1);
+    expect(recalcularMarcadorAcertando(0, 10)).toBe(1);
     expect(recalcularMarcadorAcertando(0, 11)).not.toBe(1);
   });
 
