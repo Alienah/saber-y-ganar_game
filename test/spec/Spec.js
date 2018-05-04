@@ -2,10 +2,12 @@
 *   question:
       id
       question
-      correct
-*
-*
-*
+      correctAnswer
+      answers
+
+    answer:
+      id
+
 *
 *
 *
@@ -35,6 +37,14 @@
 *           (3 puntos, no contesta, 21 segundos) -> 0 puntos
 *
 * */
+describe('comprobación de las respuestas', function () {
+  function isCorrect () {
+    
+  }
+  it('la respuesta es incorrecta', function () {
+    expect(isCorrect()).toBe(true);
+  });
+});
 
 
 xdescribe('cálculo de marcador si es correcta', function () {
