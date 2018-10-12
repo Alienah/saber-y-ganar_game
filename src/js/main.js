@@ -1,12 +1,11 @@
 import createClient from "./client.js";
+import createView from "./view.js";
 
 const app = (function (){
     let records;
     let questions = [];
     let questionObtained;
     let linkToIntro;
-    let introContainer;
-    let btnHide;
     let btnStart;
     let gameContainer;
     let questionsContainer;
@@ -30,15 +29,16 @@ const app = (function (){
     let inputValueOfAnswer;
     let correctAnswerId;
 
-    const startApp = () => {
+    function startApp () {
+        // createView().prepareDOM()
+
         seconds = 0;
         timer = null;
         score = 0;
         linkToIntro = document.querySelector('.link-to-explanation');
-        linkToIntro.addEventListener('click', showIntroductionInfo);
-        introContainer = document.getElementById('explanation-container');
-        btnHide = document.getElementById('btn-hide');
-        btnHide.addEventListener('click', hideIntroductionInfo);
+        linkToIntro.addEventListener('click', createView().showIntroductionInfo);
+        const btnHide = document.getElementById('btn-hide');
+        btnHide.addEventListener('click', createView().hideIntroductionInfo);
         btnStart = document.getElementById('btn-start');
         btnStart.addEventListener('click', onStartGame);
         gameContainer = document.getElementById('game__container');
@@ -63,7 +63,7 @@ const app = (function (){
         playerCorrectNumber = document.getElementById('player-correct');
         playerIncorrectNumber = document.getElementById('player-incorrect');
         document.form__container.addEventListener('click', handleEventsOfRadios);
-        updateUItoInitial();
+        //updateUItoInitial();
 
         saveQuestions();
                  
@@ -76,34 +76,19 @@ const app = (function (){
         createClient().getQuestions().then((data) => { questions = data })
     }
 
-    const onStartGame = () => {
+    function onStartGame () {
         records = localStorage.getItem('recordsData') ? JSON.parse(localStorage.getItem('recordsData')) : [];
         hideStatistics();
         showGameInterface();
         startTimer();
     };
 
-    const hideIntroductionInfo = () => {
-        introContainer.classList.remove('show');
-        introContainer.classList.add('hide');
-        btnHide.classList.add('hide');
-        btnStart.disabled = true;
-        btnStart.classList.add('btn--disabled');
-    };
-
-    const showIntroductionInfo = () => {
-        introContainer.classList.remove('hide');
-        introContainer.classList.add('show');
-        btnHide.classList.remove('hide');
-        btnHide.classList.add('show');
-    };
-
-    const showGameInterface = () => {
-        hideIntroductionInfo();
+    function showGameInterface () {
+        createView().hideIntroductionInfo();
         paintQuestions(getQuestionRamdon());
     };
     
-    const showScoreRecords = () => {
+    function showScoreRecords () {
         let recordsPanel = records.map(player =>{
             return(
             `<tr class="records__table--player">
@@ -115,7 +100,7 @@ const app = (function (){
         recordTable.innerHTML += recordsPanel;
     };
  
-    const getQuestionRamdon = () => {
+    function getQuestionRamdon () {
         const randomPosition = Math.floor(Math.random() * questions.length);
         questionObtained = questions[randomPosition];
         removeVisitedQuestion(randomPosition);
@@ -123,11 +108,11 @@ const app = (function (){
         return questionObtained;
     };
 
-    const removeVisitedQuestion = (randomPosition) => {
+    function removeVisitedQuestion (randomPosition) {
         questions.splice(randomPosition, 1);
     };
 
-    const paintQuestions = (questionObtained) => {
+    function paintQuestions (questionObtained) {
         gameContainer.classList.add('show');
         questionsContainer.classList.remove('hide');
         btnNext.classList.remove('hide');
@@ -149,7 +134,7 @@ const app = (function (){
     
     };
 
-    const changeUIWhenNoMoreQuestions = () => {
+    function changeUIWhenNoMoreQuestions () {
         questionsContainer.classList.add('hide');
         btnNext.classList.add('hide');
         playerNameInput.classList.remove('hide');
@@ -158,16 +143,16 @@ const app = (function (){
         btnSend.classList.remove('btn--disabled');
     };
 
-    const isAnswerCorrect = (answerCorrect, answerOfUser) => {
+    function isAnswerCorrect (answerCorrect, answerOfUser) {
         return (answerCorrect == answerOfUser);     
     };
 
-    const getValuesToCompare = (target) => {    
+    function getValuesToCompare (target) {    
         inputValueOfAnswer = target.value;
         correctAnswerId = questionObtained.correctAnswerId;
     };
 
-    const getResultOfComparation = () => {
+    function getResultOfComparation () {
         if(isAnswerCorrect(inputValueOfAnswer, correctAnswerId)) {
             showMsgWhenIsCorrect();
             sumToTotalCorrectAnswersOfPlayer();
@@ -179,11 +164,11 @@ const app = (function (){
         }      
     };
 
-    const showScoreWhenNoAnswer = () => {
+    function showScoreWhenNoAnswer () {
         showScore(recalculateScoreWhenNoAnswer);
     };
 
-    const preventNextQuestion = (targetRadio) => {
+    function preventNextQuestion (targetRadio) {
         if (targetRadio.checked) {
             btnNext.disabled = false;
             btnNext.classList.remove('btn--disabled');
@@ -194,35 +179,35 @@ const app = (function (){
         }
     };
 
-    const handleEventsOfRadios = (event) => {
+    function handleEventsOfRadios (event) {
         const target = event.target;
         getValuesToCompare(target);
         preventNextQuestion(target);
     };
 
     //Mensajes que se mostrarán en la interfaz
-    const showMsgWhenIsCorrect = () => {
+    function showMsgWhenIsCorrect () {
         msgResult.classList.remove('msg--incorrect');
         msgResult.classList.add('msg--correct');
         msgResult.innerHTML = 'Correcto!';
     };     
 
-    const showMsgWhenIsIncorrect = () => {
+    function showMsgWhenIsIncorrect () {
         msgResult.classList.remove('msg--correct');
         msgResult.classList.add('msg--incorrect');
         msgResult.innerHTML = 'Incorrecto :(';
     }; 
 
-    const sumToTotalCorrectAnswersOfPlayer = () => {
+    function sumToTotalCorrectAnswersOfPlayer () {
         numberOfCorrects = numberOfCorrects + 1;
     };
 
-    const sumToTotalIncorrectAnswersOfPlayer = () => {
+    function sumToTotalIncorrectAnswersOfPlayer () {
         numberOfIncorrects = numberOfIncorrects + 1;
     };
 
     //Recalcular marcador
-    const recalculateScoreWhenIsCorrect = (score, seconds) => {
+    function recalculateScoreWhenIsCorrect (score, seconds) {
         if (seconds <= 2) {
             return score + 2;
         }
@@ -234,7 +219,7 @@ const app = (function (){
         }
     };
 
-    const recalculateScoreWhenIsIncorrect = (score, seconds) => {
+    function recalculateScoreWhenIsIncorrect (score, seconds) {
         if (seconds > 10) {
             return score - 2;
         }
@@ -243,23 +228,23 @@ const app = (function (){
         }
     };
 
-    const recalculateScoreWhenNoAnswer = (score) => {
+    function recalculateScoreWhenNoAnswer (score) {
         return score - 3;
     };
 
-    const showScore = (myRecalculateFunction) => {
+    function showScore (myRecalculateFunction) {
         score = myRecalculateFunction(score, seconds);
         return console.log(`La puntuación es ${score}`);
     };
 
     //Funciones de temporizador
-    const startTimer = () => {
+    function startTimer () {
         if (!timer) {
             timer = setInterval(function () {updateTimer(onNextQuestion);}, 1000);
         }
     };
 
-    const updateTimer = (onTimeOut) => {
+    function updateTimer (onTimeOut) {
         seconds++;
         timerContainer.innerHTML = seconds;
         console.log(seconds);            
@@ -269,12 +254,12 @@ const app = (function (){
             }       
     };
 
-    const onNextQuestion = () => {
+    function onNextQuestion () {
         updateUI();
         updateScore();   
     };
 
-    const updateUI = () => {
+    function updateUI () {
         if (questions.length > 0) {
             showGameInterface();
         } else {
@@ -287,21 +272,21 @@ const app = (function (){
         playerTimeTotal = playerTimeTotal + seconds;
     };
 
-    const updateScore = () => {
+    function updateScore () {
         showScoreWhenNoAnswer();
     };
 
-    const doBeforeNextQuestion = () => {
+    function doBeforeNextQuestion () {
         getResultOfComparation();
         updateUI();
         resetAnswerTimer();
     };
 
-    const goToNextQuestion = () => {
+    function goToNextQuestion () {
         doBeforeNextQuestion();
     };
 
-    const stopTimer = () => {
+    function stopTimer () {
         if (timer) {
             clearInterval(timer);        
         }
@@ -309,15 +294,15 @@ const app = (function (){
         resetAnswerTimer();
     };
 
-    const gameOver = () => {
+    function gameOver () {
         stopTimer();
     };
 
-    const resetAnswerTimer = () => {
+    function resetAnswerTimer () {
         seconds = 0;
     };
 
-    const paintDataOfPlayer = (name, score) => {
+    function paintDataOfPlayer (name, score) {
         let newPlayerRecord = `<tr class="records__table--player">
                 <td class="player__name">${name}</td>
                 <td class="player__score">${score} puntos</td>
@@ -325,11 +310,11 @@ const app = (function (){
         recordTable.insertAdjacentHTML('afterbegin', newPlayerRecord);
     };
 
-    const saveDataOfPlayerInStorage = () => {
+    function saveDataOfPlayerInStorage () {
         localStorage.setItem('recordsData', JSON.stringify(records));
     };
 
-    const manageDataOfPlayer = () => {
+    function manageDataOfPlayer () {
         let playerName = playerNameInput.value;
         let playerData = {
             name: playerName,
@@ -341,15 +326,15 @@ const app = (function (){
         paintDataOfPlayer(playerName, score);
     };
  
-    const resetQuestions = () => {
+    function resetQuestions () {
         saveQuestions();
     };
 
-    const getTimeAverage = () => {
+    function getTimeAverage () {
         return playerTimeTotal / 4 ;
     };
 
-    const showStatistics = () => {
+    function showStatistics () {
         statisticsContainer.classList.remove('hide');
         statisticsContainer.classList.add('show');
         playerTime.innerHTML = getTimeAverage();
@@ -357,18 +342,18 @@ const app = (function (){
         playerIncorrectNumber.innerHTML = numberOfIncorrects;
     };
 
-    const resetStatistics = () => {
+    function resetStatistics () {
         playerTimeTotal = 0;
         numberOfCorrects = 0;
         numberOfIncorrects = 0;
     };
 
-    const hideStatistics = () => {
+    function hideStatistics () {
         statisticsContainer.classList.remove('show');
         statisticsContainer.classList.add('hide');
     };
 
-    const updateUItoInitial = () => {
+    function updateUItoInitial () {
         btnStart.disabled = false;
         btnStart.classList.remove('btn--disabled');
         gameContainer.classList.remove('show');
@@ -380,7 +365,7 @@ const app = (function (){
         btnSend.classList.add('btn--disabled');
     };
 
-    const recapGame = () => {
+    function recapGame () {
         showStatistics();
         resetQuestions();
         manageDataOfPlayer();     
@@ -388,7 +373,7 @@ const app = (function (){
         resetStatistics();
     };
 
-    const stopGame = () => {
+    function stopGame () {
         updateUItoInitial();
         stopTimer();
         resetQuestions();
