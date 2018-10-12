@@ -12,7 +12,6 @@ To launch server:
 
 Then, lauch the server of the app and open the index.html file, for example with live server
 
-To lauch test:
+To lauch puppeteer test:
 
-- npm test
-
+- node __ tests __/puppeTest.js
