@@ -1,19 +1,6 @@
-import createClient from "./client.js";
-import createView from "./view.js";
-import store from "./store.js"
-
-export default function createController() {
+export default function createController(client, view, store) {
     let questions = [];
     let questionObtained;
-    let linkToIntro;
-    let btnStart;
-    let btnNext;
-    let btnSend;
-    let btnStop;
-    let statisticsContainer;
-    let playerTime;
-    let playerCorrectNumber;
-    let playerIncorrectNumber;
     let seconds;
     let timer;
     let timerContainer;
@@ -25,60 +12,59 @@ export default function createController() {
     let correctAnswerId;
 
 function startApp() {
-    // createView().prepareDOM()
-
     seconds = 0;
     timer = null;
     score = 0;
-    linkToIntro = document.querySelector('.link-to-explanation');
-    linkToIntro.addEventListener('click', createView().showIntroductionInfo);
-    const btnHide = document.getElementById('btn-hide');
-    btnHide.addEventListener('click', createView().hideIntroductionInfo);
-    btnStart = document.getElementById('btn-start');
-    btnStart.addEventListener('click', onStartGame);
     timerContainer = document.getElementById('timer-container');
-    btnNext = document.getElementById('btn-next');
-    btnNext.disabled = true;
-    btnNext.classList.add('btn--disabled');
-    btnNext.addEventListener('click', goToNextQuestion);
-    btnSend = document.getElementById('btn-send');
-    btnSend.disabled = true;
-    btnSend.classList.add('btn--disabled');
-    btnSend.addEventListener('click', recapGame);
-    btnStop = document.getElementById('btn-stop');
-    btnStop.addEventListener('click', stopGame);
-    statisticsContainer = document.getElementById('statistics_container');
-    statisticsContainer.classList.add('hide');
-    playerTime = document.getElementById('player-time');
-    playerCorrectNumber = document.getElementById('player-correct');
-    playerIncorrectNumber = document.getElementById('player-incorrect');
-    document.form__container.addEventListener('click', handleEventsOfRadios);
-    createView().updateUItoInitial();
-
+    
+    subscribeButtonsToEvents();
+    view.updateUItoInitial();
     saveQuestions();
     updateStore()
-    createView().renderRecords(store.records);
+    view.renderRecords(store.records);
 };
 
+function subscribeButtonsToEvents (){
+    const linkToIntro = document.querySelector('.link-to-explanation');
+    linkToIntro.addEventListener('click', view.showIntroductionInfo);
+
+    const btnHide = document.getElementById('btn-hide');
+    btnHide.addEventListener('click', view.hideIntroductionInfo);
+
+    const btnStart = document.getElementById('btn-start');
+    btnStart.addEventListener('click', onStartGame);
+
+    const btnNext = document.getElementById('btn-next');
+    btnNext.addEventListener('click', goToNextQuestion);
+
+    const btnSend = document.getElementById('btn-send');
+    btnSend.addEventListener('click', recapGame);
+
+    const btnStop = document.getElementById('btn-stop');
+    btnStop.addEventListener('click', stopGame);
+
+    document.form__container.addEventListener('click', handleEventsOfRadios);
+}
+
 function saveQuestions() {
-    createClient().getQuestions().then((data) => { questions = data })
+    client.getQuestions().then((data) => { questions = data })
 }
 
 function updateStore() {
-    store.records = createClient().getRecords();
-    console.log(store);
+    store.records = client.getRecords();
 }
 
 function onStartGame() {
     updateStore();
-    hideStatistics();
+    view.hideContainersOnStart();
     showGameInterface();
     startTimer();
 };
 
 function showGameInterface() {
-    createView().hideIntroductionInfo();
-    createView().paintQuestions(getQuestionRamdon());
+    view.hideIntroductionInfo();
+    view.updateUIOnStart();
+    view.paintQuestions(getQuestionRamdon());
 };
 
 function getQuestionRamdon() {
@@ -98,17 +84,17 @@ function isAnswerCorrect(answerCorrect, answerOfUser) {
 };
 
 function getValuesToCompare(target) {
-    inputValueOfAnswer = createView().getAnswerOfPlayer(target);
+    inputValueOfAnswer = view.getAnswerOfPlayer(target);
     correctAnswerId = questionObtained.correctAnswerId;
 };
 
 function getResultOfComparation() {
     if (isAnswerCorrect(inputValueOfAnswer, correctAnswerId)) {
-        createView().showMsgWhenIsCorrect();
+        view.showMsgWhenIsCorrect();
         sumToTotalCorrectAnswersOfPlayer();
         showScore(recalculateScoreWhenIsCorrect);
     } else {
-        createView().showMsgWhenIsIncorrect();
+        view.showMsgWhenIsIncorrect();
         sumToTotalIncorrectAnswersOfPlayer();
         showScore(recalculateScoreWhenIsIncorrect);
     }
@@ -120,12 +106,10 @@ function showScoreWhenNoAnswer() {
 
 function preventNextQuestion(targetRadio) {
     if (targetRadio.checked) {
-        btnNext.disabled = false;
-        btnNext.classList.remove('btn--disabled');
+        view.enableBtnNext();
     }
     else {
-        btnNext.disabled = true;
-        btnNext.classList.add('btn--disabled');
+        view.disableBtnNext();
     }
 };
 
@@ -200,11 +184,10 @@ function updateUI() {
     if (questions.length > 0) {
         showGameInterface();
     } else {
-        createView().changeUIWhenNoMoreQuestions();
+        view.changeUIWhenNoMoreQuestions();
         gameOver();
     }
-    btnNext.disabled = true;
-    btnNext.classList.add('btn--disabled');
+    view.disableBtnNext();
     console.log(`Tiempo transcurrido ${seconds} segundos`);
     playerTimeTotal = playerTimeTotal + seconds;
 };
@@ -240,15 +223,15 @@ function resetAnswerTimer() {
 };
 
 function manageDataOfPlayer() {
-    let playerName = createView().getNameOfPlayer();
+    let playerName = view.getNameOfPlayer();
     let playerData = {
         name: playerName,
         score: `${score} puntos`
     };
     store.records.push(playerData);
 
-    createClient().saveDataOfPlayerInStorage();
-    createView().paintDataOfPlayer(playerName, score);
+    client.saveDataOfPlayerInStorage();
+    view.paintDataOfPlayer(playerName, score);
 };
 
 function resetQuestions() {
@@ -259,35 +242,22 @@ function getTimeAverage() {
     return playerTimeTotal / 4;
 };
 
-function showStatistics() {
-    statisticsContainer.classList.remove('hide');
-    statisticsContainer.classList.add('show');
-    playerTime.innerHTML = getTimeAverage();
-    playerCorrectNumber.innerHTML = numberOfCorrects;
-    playerIncorrectNumber.innerHTML = numberOfIncorrects;
-};
-
 function resetStatistics() {
     playerTimeTotal = 0;
     numberOfCorrects = 0;
     numberOfIncorrects = 0;
 };
 
-function hideStatistics() {
-    statisticsContainer.classList.remove('show');
-    statisticsContainer.classList.add('hide');
-};
-
 function recapGame() {
-    showStatistics();
+    view.showStatistics(getTimeAverage(), numberOfCorrects, numberOfIncorrects);
     resetQuestions();
     manageDataOfPlayer();
-    createView().updateUItoInitial();
+    view.updateUItoInitial();
     resetStatistics();
 };
 
 function stopGame() {
-    createView().updateUItoInitial();
+    view.updateUItoInitial();
     stopTimer();
     resetQuestions();
 };
