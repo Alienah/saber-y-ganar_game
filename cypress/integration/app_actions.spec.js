@@ -3,7 +3,9 @@ context('Actions in the game', () => {
         cy.visit('http://127.0.0.1:5500/index.html')
     })
     it('shows the questions and the result of my answers and save them', ()=> {
+        cy.wait(1000)
         cy.get('#btn-start').click();
+        cy.wait(1000)   
         cy.get('#item-1').click();
         cy.wait(1000)
         cy.get('#btn-next').click();
