@@ -27,6 +27,6 @@ context('Actions in the game', () => {
         cy.wait(1000)
         cy.get('#btn-send').click();
         cy.wait(1000)
-        cy.get('#score-container').should('be.visible');
+        cy.get('#score-container').should('be.visible').children('.record__table').contains('Guybrush Threepwood');
     })
 })
