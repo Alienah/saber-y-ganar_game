@@ -1,3 +1,13 @@
 #Dependencies
 
 node_modules
+
+#Cypress examples
+
+cypress/integration/examples/
+cypress/fixtures/example.json
+cypress/fixtures/profile.json
+cypress/fixtures/users.json
+cypress/plugins/index.js
+cypress/support/commands.js
+cypress/support/index.js
