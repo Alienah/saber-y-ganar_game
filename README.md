@@ -1,4 +1,4 @@
-# saberYganar
+# Saber y Ganar game
 Game of questions and answers. 
 
 This app has been created to try different ways of testing.
