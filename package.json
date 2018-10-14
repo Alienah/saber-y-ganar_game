@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+    "cypress": "^3.1.0",
     "jest": "^23.6.0"
   }
 }
