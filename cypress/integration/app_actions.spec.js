@@ -12,7 +12,7 @@ context('Actions in the game', () => {
         cy.wait(1000)
         cy.get('#btn-next').click();
         cy.wait(1000)
-        cy.get('#item-1').click();
+        cy.get('#item-0').click();
         cy.wait(1000)
         cy.get('#btn-next').click();
         cy.wait(1000)
@@ -20,17 +20,9 @@ context('Actions in the game', () => {
         cy.wait(1000)
         cy.get('#btn-next').click();
         cy.wait(1000)
-        cy.get('#player-name').type('AIDA');
+        cy.get('#player-name').type('Guybrush Threepwood');
         cy.wait(1000)
         cy.get('#btn-send').click();
         cy.wait(1000)
-        // cy.get('').click();
-        // cy.get('').click();
-        // cy.get('').click();
-        // cy.get('').click();
-        // cy.get('').click();
-        // cy.get('').click();
-
-
     })
 })
